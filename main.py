@@ -2,6 +2,7 @@ import numpy as np
 import pyfftw
 import time 
 import random
+import concurrent.futures
 
 def gerar_dados(N, grau_max):
     lista_A=[]
@@ -47,6 +48,13 @@ def execucao_sequencial(listaA , listaB):
         resultados.append(multiplicar_fft(poly_a,poly_b))
     return resultados
 
+def execucao_paralela(listaA, listaB, num_threads):
+    resultados = []
+    with concurrent.futures.ThreadPoolExecutor(max_workers=num_threads) as executor:
+        result = executor.map(multiplicar_fft, listaA, listaB)
+        resultados = list(result)
+    return resultados
+
 print("Sistema iniciado!\n")
 print("Você deve primeiro passar as instruções para o vetor a ser multiplicado seja criado!\n")
 
@@ -82,7 +90,21 @@ while True:
         print(f"Total de {len(resultados_seq)} multiplicações realizadas.")
 
     elif escolha == '2':
-        pass
+        try:
+            qntd_threads = int(input("\nQuantas threads você quer utilizar? (ex: 8)\n"))
+            if qntd_threads <= 0:
+                 print("O número de threads deve ser maior que zero.")
+                 continue
+            print("\nIniciando execução PARALELA...")
+            inicio_seq = time.perf_counter()
+            resultados_seq = execucao_paralela(lista_polinomios_A, lista_polinomios_B, qntd_threads)
+            fim_seq = time.perf_counter()   
+            tempo_seq = fim_seq - inicio_seq
+            print(f"Execução PARALELA concluída.")
+            print(f"Tempo total: {tempo_seq:.4f} segundos")
+            print(f"Total de {len(resultados_seq)} multiplicações realizadas.")
+        except ValueError:
+            print("Entrada inválida. Por favor, digite um número inteiro.")
 
     elif escolha == '3':
         print("\nSaindo do programa...")
