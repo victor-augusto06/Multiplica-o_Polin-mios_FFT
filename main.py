@@ -41,9 +41,51 @@ def multiplicar_fft(poly1, poly2):
     
     return arrayFinal
 
+def execucao_sequencial(listaA , listaB):
+    resultados = []
+    for poly_a, poly_b in zip(listaA, listaB):
+        resultados.append(multiplicar_fft(poly_a,poly_b))
+    return resultados
+
 print("Sistema iniciado!\n")
 print("Você deve primeiro passar as instruções para o vetor a ser multiplicado seja criado!\n")
-n=int(input("Qual deve ser o número do tamanho do vetor?\n"))
-grau_max=int(input("Qual deve ser o grau máximo dos vetores?"))
+
+try:
+    n=int(input("Qual deve ser o número do tamanho do vetor?\n"))
+    grau_max=int(input("Qual deve ser o grau máximo dos vetores?\n"))
+
+except ValueError:
+    print("Entrada inválida. Por favor, insira apenas números inteiros.")
+    exit()
+
+print("\nGerando dados... Isso pode demorar um pouco.")
 lista_polinomios_A, lista_polinomios_B = gerar_dados(n, grau_max)
 print("Vetor criado com sucesso!")
+
+while True:
+    print("\n--- Menu de Execução ---")
+    print("Escolha uma opção:")
+    print("1. Executar versão Sequencial (procedural)")
+    print("2. Executar versão Paralela (threads)")
+    print("3. Sair")
+
+    escolha = input("Digite sua opção (1, 2 ou 3): ")
+
+    if escolha == '1':
+        print("\nIniciando execução SEQUENCIAL...")
+        inicio_seq = time.perf_counter()
+        resultados_seq = execucao_sequencial(lista_polinomios_A, lista_polinomios_B)
+        fim_seq = time.perf_counter()   
+        tempo_seq = fim_seq - inicio_seq
+        print(f"Execução SEQUENCIAL concluída.")
+        print(f"Tempo total: {tempo_seq:.4f} segundos")
+        print(f"Total de {len(resultados_seq)} multiplicações realizadas.")
+
+    elif escolha == '2':
+        pass
+
+    elif escolha == '3':
+        print("\nSaindo do programa...")
+        break
+    else:
+        print("\nOpção inválida. Por favor, digite 1, 2 ou 3.")
